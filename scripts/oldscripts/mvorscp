@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#	This is a command to move a file from one location to the other,
+#	either using mv or scp, whichever is appropriate.
+#       You must use this from the server where file is located.  This is for SEND,
+#       not for GET.
+
+file=$1
+sender=$2
+recipient=$3
+newname=${5:-'~/'}
+user=${4:-default_user}
+
+#  If no users were supplied, set them as the default user
+
+if [ $sender == $recipient ]; then
+   mv $file $newname
+fi
+
+if [ $sender != $recipient ]; then
+   scp $file $user'@'$recipient':'$newname
+fi

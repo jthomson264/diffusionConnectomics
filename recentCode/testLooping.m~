@@ -1,0 +1,28 @@
+%  This will have a time go through power and asymptotic approximations.  
+%  I want to check if looping and using an if statement dramatically
+%  slows down computation.
+
+
+x = 3*ones(1000,30);
+x(:,15:30) = 5;
+
+disp('Starting loop through stuff');
+
+for i = 1:numel(x)
+  if x(i) < 4
+    y(i) = besselAppPower(0, x(i), 5);
+  else
+    y(i) = besselAppAsymptotic(0, x(i), 5);
+end
+
+disp('done.')
+
+
+disp('starting matrix comp');
+
+powApps = besselAppPower(0, x, 5);
+assApps = besselAppAsymptotic(0, x, 5);
+big = x > 4;
+appr = (big.*assAps) + ((1-big).*powApps);
+
+disp('done.');

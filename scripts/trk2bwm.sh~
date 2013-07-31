@@ -1,0 +1,8 @@
+#!/bin/bash
+
+filename=$1
+scanName=${2:p1s1}
+
+. ~/code/scripts/matlab_batcher.sh writeBWMfromTRK "'${filename}','${scanName}"
+
+echo "Converted the tracts file to a bandwidth matrix ... "

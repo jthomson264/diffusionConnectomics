@@ -1,0 +1,20 @@
+function allTracts = showManyTracts(N,P,angle)
+
+tract1 = makeTract(N,P,angle);
+tracts = tract1;
+
+for i = 1:100
+    
+   newTract = makeTract(N,P,angle);
+   tracts = [tract1 ; newTract];
+    
+    
+end
+
+
+plot3(tracts(:,1), tracts(:,2), tracts(:,3));
+
+allTracts = trac;
+
+
+end

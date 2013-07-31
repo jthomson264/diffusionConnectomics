@@ -1,0 +1,8 @@
+scp add2queue.sh pfoley@banshee.stat.cmu.edu:~/
+`echo` "heyheyhey" >> package
+scp package pfoley@banshee.stat.cmu.edu:~/
+echo "heyheyhey" >> package
+scp package pfoley@banshee.stat.cmu.edu:~/
+echo heyheyhey >> package
+scp package pfoley@banshee.stat.cmu.edu:~/
+echo heyheyhey >> package

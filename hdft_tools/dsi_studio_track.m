@@ -1,0 +1,79 @@
+function dsi_studio_track(fibfile,seedfile,outfile,varargin);
+
+% function dsi_studio_track(fibfile,seedfile,outfile,opt_label,opt_val);
+% A wrapper function for DSI Studio to perform tracking. 
+%
+%   INPUT:
+%       fibfile = pointer to .fib.gz file location
+%       seedfile = pointer to seed mask (.txt or .nii)
+%       outfile  = pointer to output file (.trk or .txt)
+%   
+%   OPTIONS: See DSI Studio manual for more info
+%       track_count = # fibers to track (DEFAULT=10000);
+%       seed_count  = # seeds to run (alternative to track_count)
+%       step_size   = fiber step size (DEFAULT=0.5)
+%       turning_angle = fiber turning allowance in degrees (DEFAULT=75)
+%       smoothing   = noise reduction smoothing (DEFAULT=0.8)
+%       min_length  = minimum allowable fiber length in mm (DEFAULT=20)
+%       max_length  = maximum allowable fiber length in mm (DEFAULT=200)
+%       fa_threshold = termination FA threshold (DEFAULT=0.03)
+%       thread_count = number of cpu threads to use (DEFAULT=2);
+%       roi = string or cell array of pointers to ROI files
+%       roa = string or cell array of pointers to ROA files
+%
+%  Note: This wrapper was tested using the Oct, 10th, 2010 build of
+%  DSIStudio.  No gaurantees it works with any earlier or later version
+% 
+%  Written by T. Verstynen, 10/22/2010
+
+%dsi_studio_pointer = '/usr/local/pkg/dsi_studio.20100703/dsi_studio';
+dsi_studio_pointer = '/Users/timothyv/Local-Programs/dsi_studio.20101001build/dsi_studio';
+
+params.track_count =    10000;
+params.step_size =      0.5;
+params.turning_angle =  75;
+%params.interpo_angle =  0.75; DON'T USE interpo_angle!
+params.smoothing =      0.80;
+params.min_length =     20;
+params.max_length =     200;
+params.fa_threshold =   0.03;
+params.thread_count =   1;
+
+% Get variable input parameters
+for v=1:2:length(varargin),
+    eval(sprintf('params.%s = varargin{%d};',varargin{v},v+1));
+end
+
+if isfield(params,'seeding_count');
+    params=rmfield(params,'track_count');
+end;
+
+strn = sprintf('!wine %s action=tracking source=%s output=%s seeding=%s',...
+	       dsi_studio_pointer, fibfile, outfile, seedfile);
+
+fnames = fieldnames(params);
+
+for f = 1:length(fnames);
+    field_val = eval(sprintf('params.%s',fnames{f}));
+    
+    if isnumeric(field_val)
+        strn = sprintf('%s %s=%s ',strn, fnames{f}, num2str(field_val));
+    elseif isstr(field_val);
+        strn = sprintf('%s %s=%s ',strn, fnames{f}, field_val);
+    elseif iscell(field_val);
+        for c = 1:length(field_val)
+            strn = sprintf('%s %s=%s',strn, fnames{f}, field_val{c});
+        end
+        
+    else
+        error('Unknown input option for Tracking');
+    end;
+    
+end;
+    
+% Now do the tracking
+eval(strn);
+    
+
+    
+

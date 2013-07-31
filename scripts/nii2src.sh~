@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#  This is a dir
+dir=$1
+
+NIFTI=~/data/${dir}/data.nii
+btab=~/data/${dir}/btab
+
+echo "Running NIFTI to Source on $NIFTI with btable $btab ... "
+
+. ~/code/scripts/matlab_batcher.sh niiToSource "'${NIFTI}','${btab}'"
+
+echo "NIFTI converted"

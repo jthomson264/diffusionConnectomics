@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#  This is a script to use the wine command to run the standard version of dsi_studio's tractography.
+
+fileName=$1
+
+wine cmd | echo "~/code/localcode/dsicmd/dsi_studio.exe --action=rec --source=${fileName} --method=gqi --record_odf=on --odf=6"

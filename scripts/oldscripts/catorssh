@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#    This is a command to cat text to a file located locally OR on another server.
+#    It either cats directly or uses ssh and piping to cat to a remote file.
+#    You must have the text as a local variable.
+
+sender=$2
+command=$1
+recipient=$3
+
+#
+
+if [ $sender == $recipient ]
+    then echo "$command" >> ~/queue.txt
+fi
+
+if [ $sender != $recipient ] 
+    then echo "$command" | ssh $default_user'@'$recipient "cat >> ~/queue.txt"
+fi
+
+printf "sent the command:  $command \n from $sender to $recipient \n \n"

@@ -1,0 +1,85 @@
+function outfile = dsi_studio_fib_permute(fibfile,outfile,varargin);
+
+% function dsi_studio_fib_permute(fibfile,outfile,opt_label,opt_val);
+% A wrapper function for DSI Studio to perform reconstruction
+%
+%   INPUT:
+%       fibfile = pointer to .fib.gz file location
+%       outfile = pointer to output .fib.gz file (DEFAULT = perm-FIBFILE)
+%   
+%   OPTIONS: 
+%       permute_opt = option for permuting the voxel ODFs
+%           'peaks' permutes index of fiber peaks (DEFAULT)
+%           'amps'  permutes the FA amplitude of each fiber
+%           'both'  performs a permutation on both 'peaks' and 'amps'
+%           'none'  does nothing (returns the same file)
+%
+%  Note: This wrapper was tested using the Oct, 10th, 2010 build of
+%  DSIStudio.  No gaurantees it works with any earlier or later version
+% 
+%  Written by T. Verstynen, 10/22/2010
+
+permute_opt = 'peaks'; %'none';%'amps'; %'peaks';
+
+% Get variable input parameters
+for v=1:2:length(varargin),
+    eval(sprintf('%s = varargin{%d};',varargin{v},v+1));
+end
+
+% Setup a temporary file
+rand_prefix = sprintf('tmp-%.3i',round(randn*1000));
+
+% Identify the input .fib file
+[fpath, fname, fext] = fileparts(fibfile);
+if isempty(fpath)
+  eval(sprintf('!cp %s %s-%s',fibfile, rand_prefix, fibfile));
+else
+  eval(sprintf('!cp %s %s',fullfile(fpath,[fname fext]),... 
+	       fullfile(fpath,[rand_prefix fname fext])));
+end
+
+% Unzip if it's still gzipped
+switch fext
+    case '.gz'
+        eval(sprintf('!gunzip %s',...
+		      fullfile(fpath,[rand_prefix fname fext])));
+end;
+
+% Move the temporary file over
+eval(sprintf('!mv %s %s.mat',fullfile(fpath,[rand_prefix fname]),...
+	     fullfile(fpath,[rand_prefix fname])));
+
+load(sprintf('%s.mat',fullfile(fpath,[rand_prefix fname])));
+
+% Perform the appropriate permutation
+switch permute_opt
+    case {'peaks','both'};
+        index_vars = whos('index*');
+        for i = 0:length(index_vars)-1;
+            eval(sprintf('index%d = index%d(randperm(length(index%d)));',...
+                i,i,i));
+        end;
+        clear index_vars;
+        
+    case {'amps','both'}
+        index_vars = whos('fa*');
+        for i = 0:length(index_vars)-1;
+            eval(sprintf('fa%d = fa%d(randperm(length(fa%d)));',...
+                i,i,i));
+        end;
+        clear index_vars;
+        
+end
+
+% If no output file associated, then give a devault
+if nargin < 2 | isempty(outfile)
+    outfile = fullfile(fpath,['perm-' fname]);
+end;
+
+% Now save and close up shop
+eval(sprintf('!rm %s.mat',fullfile(fpath,[rand_prefix fname])));
+clear permute_opt fpath fname fext varargin fibfile v
+save(outfile,'-V4');
+eval(sprintf('!gzip -f %s',outfile));
+outfile = [outfile '.gz'];
+

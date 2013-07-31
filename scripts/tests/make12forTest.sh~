@@ -1,0 +1,4 @@
+#!/bin/bash
+
+matlab_batcher.sh writeNewNiis "'test',12"
+matlab_batcher.sh synthNoisedImages "'test',12"

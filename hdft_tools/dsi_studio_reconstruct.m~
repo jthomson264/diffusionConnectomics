@@ -1,0 +1,59 @@
+function dsi_studio_reconstruct(srcfile,maskfile,varargin);
+
+% function dsi_studio_reconstruct(srcfile,maskfile,opt_label,opt_val);
+% A wrapper function for DSI Studio to perform reconstruction
+%
+%   INPUT:
+%       srcfile = pointer to .src.gz file location
+%       maskfile = pointer to ODF mask (.txt or .nii)
+%   
+%   OPTIONS: See DSI Studio manual for more info
+%       method = 'gqi'(DEFAULT), 'dsi','dti','qbi_sh','qbi_frt'
+%       param1 = first free parameter (DEFAULT=1.2)
+%       param2 = second free parameter (DEFAULT=empty). Only used for QBI.
+%       odf    = resolution of ODF: 4,5,6, or 8 (DEFAULT)
+%       number_of_fibers = # of peaks per ODF to record (DEFAULT=3)
+%       decomposition = do ODF decomposition (DEFAULT='off')
+%       deconvolution = ODF deconvolution paramter (DEFULT=empty)
+%       record_odf = save ODF (DEFAULT='off'; makes for larger file size)
+%
+%  Note: This wrapper was tested using the Oct, 10th, 2010 build of
+%  DSIStudio.  No gaurantees it works with any earlier or later version
+% 
+%  Written by T. Verstynen, 10/22/2010
+
+dsi_studio_pointer = '/home/timothyv/Local-Programs/dsi_studio/dsi_studio';
+
+params.method  = 'gqi'; % dsi, dti, qbi_frt, qbi_sh
+params.param1  = 1.2;
+params.odf     = 8; % 4, 5, 6 or 8
+params.number_of_fibers = 3; % Frank needs to fix this still
+
+% Optional Input parameters
+% params.param2 = 0.006; QBI reconstruction parameter
+% params.deconvoluation = 1.2
+% params.decomposition = '"on"';
+% params.record_odf = '"on"';
+
+
+% Get variable input parameters
+for v=1:2:length(varargin),
+    eval(sprintf('params.%s = varargin{%d};',varargin{v},v+1));
+end
+
+strn = sprintf('!wine %s action=reconstruction source=%s mask=%s',...
+	       dsi_studio_pointer, srcfile, maskfile);
+
+fnames = fieldnames(params);
+
+for f = 1:length(fnames);
+    field_val = eval(sprintf('params.%s',fnames{f}));
+    strn = sprintf('%s %s=%s ',strn, fnames{f}, num2str(field_val));
+end;
+
+% Now do the reconstruction
+eval(strn);
+    
+
+    
+

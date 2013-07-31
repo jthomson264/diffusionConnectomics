@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ls -l -h > fake.txt
+cp fake.txt fake2.txt
+cp fake2.txt fake3.txt
+cp fake4.txt fake5.txt

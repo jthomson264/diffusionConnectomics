@@ -1,0 +1,4 @@
+ssh pfoley@castor.stat.cmu.edu rm ~/queue.txt
+ssh pfoley@banshee.stat.cmu.edu rm ~/queue.txt
+rm ~/queue.txt
+rm queue.txt

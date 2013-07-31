@@ -1,0 +1,110 @@
+function [ data ] = synthImageFromBPX( bedpostXinputDir, bedpostXoutputDir, N )
+%This function synthesizes the data.nii from a set of bedpostx outputs.
+%      N is the number of fibers fit.
+%   bedpostXoutputDir must contain the following files
+%           - nodif_brain_mask.nii
+%           - dyads#.nii                for i = 1:N
+%           - mean_dsamples.nii
+%           - mean_f#famples.nii        for i = 1:N
+%           - bvals
+%           - bvecs
+%   bedpostXinputDir must contain the input for bedpostXoutputDir
+%           Crucially, it contains data.nii, from which we take the
+%           background signal s0.
+
+
+
+% Set Everything Up:
+%   Load all single files
+%   Load all 1:N files
+%   count voxels
+%   allocate storage for images
+
+file
+%   Load all single files
+bvals = load([bedpostXoutputDir, 'bvals']);
+bvecs = load([bedpostXoutputDir, 'bvecs']);
+mean_d = load_nii([bedpostXoutputDir, 'mean_dsamples.nii']);
+mask = load_nii([bedpostXoutputDir, 'nodif_brain_mask.nii']);
+originalImages = load_nii([bedpostXinputDir, 'data.nii']);
+background = squeeze(originalImages.img(:,:,:,1));
+
+%   Load all 1:N files
+for i=1:N
+    
+    iname = int2str(i);
+    
+    dyadName = ['dyads', iname];
+    readDyad = ['load_nii([bedpostXoutputDir, ''dyads', iname, '.nii'']);'];
+    dyadLoadCommand = [dyadName, ' = ', readDyad];
+    
+    fName = ['f', iname];
+    readf = ['load_nii([bedpostXoutputDir, ''mean_f', iname, 'samples.nii'']);'];
+    fLoadCommand = [fName, ' = ', readf];
+    
+    eval(dyadLoadCommand);
+    eval(fLoadCommand);    
+    
+end
+    
+%   Count voxels
+voxelsLinearIndices = find(mask.img);
+[x_index, y_index, z_index ]= ind2sub(size(mask.img),voxelsLinearIndices);
+numberOfVoxels = length(voxelsLinearIndices);
+
+%   Allocate storage for the images
+data = zeros(96,96,50,515);
+tempSignal = zeros(1,515);
+
+%   Loop through voxels in mask and synthesize the ground truth images
+for i = 1:numberOfVoxels
+    
+    tempSignal = zeros(1,515);
+
+    
+    % Orient yourself
+    x = x_index(i);
+    y = y_index(i);
+    z = z_index(i);
+    
+    % Set fiber-neutral parameters
+    d = mean_d.img(x,y,z);
+    localBackgroundSignal = double(background(x,y,z));
+    isotropic_f = 1;
+    
+    % Loop through the fibers
+    for j = 1:N
+        
+        %   Get the dyad
+        getDyad = ['squeeze(dyads', int2str(j), '.img(x,y,z,:));'];
+        eval(['dyad = ', getDyad]);
+        
+        %   Get the f
+        getf = ['f', int2str(j), '.img(x,y,z);'];
+        eval(['f = ', getf]);
+        
+        %   Compute the contributed signal
+        %   signal is a row vector
+        tempSignal = tempSignal + getSignal(dyad, f, d, bvals, bvecs);
+        
+        %   Update the image and the isotropic f
+        isotropic_f = isotropic_f - f;
+    end
+    
+    %   Add in the isotropic signal
+    tempSignal = tempSignal + isotropicSignal(bvals, d, isotropic_f);
+    tempSignal = localBackgroundSignal * tempSignal;
+    
+    data(x,y,z,:) = tempSignal;
+       
+end
+
+%   Restore the background 
+data(:,:,:,1) = background;
+
+%   Put the images in the orignal image struct and return
+originalImages.img = data;
+data = originalImages;
+
+end
+

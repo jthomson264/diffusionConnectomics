@@ -1,0 +1,12 @@
+#!/bin/bash
+
+wine cmd
+
+dir
+
+exit
+
+clear
+
+ls
+

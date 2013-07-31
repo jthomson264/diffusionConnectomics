@@ -1,0 +1,70 @@
+#	This is the configuration file for running parametric bootstraps using 
+#       hdft_tools.
+#
+#	The primary purpose of this file is to determine
+#	    (*)	    Where original and synthetic images are stored
+#	    (*)	    Which commands are used for the bootstrap
+#	    (*)	    Which machines are used to complete each step.
+#
+#	For hdft_tools/bootstrap to work correctly, it is essential that you configure
+#	passwordless SSH among every server used for storage or computation.
+
+#       The bootstrap process works by calling a number of methods on particular
+#       servers.  The principal methods are:
+#           * fitModel.sh
+#           * synthTruthImage.sh
+#           * synthNoisedImages.sh
+#       Once these methods are completed, a number of synthed noised images (i.e. draws
+#       from the bootstrap) will have been created in the 'storage' directory.  At that
+#       point, there are scripts for running an analysis command on any/all images that
+#       fit a particular set of requirements.
+#
+#       Each of the three above key methods is more than just running a process.  For
+#       example, if the model is Behrens2003/2007 implemented by FSL's bedpostx fit,
+#       then fitModel first checks if the model already has been fit.  If so, it does
+#       nothing.  In addition to these commands, there are transfer commands.  The key
+#       ./bootstrap.sh will add to the queues of every server a series of processing
+#       and transferring commands.  Each will first check if the job is done, and then
+#       if it is done, it will cat that same command to finishedQueue.txt.  The script
+#       completeQueue.sh first replaces every line in the queue also present in 
+#       finished queue with a null character.  Then it runs the queue.
+#
+#       The individual steps do NOT add commands to the next server.  Rather, a single
+#       bootstrap.sh call will add appropriate commands to every server.  Each command
+#       first checks if the job is complete, then checks if the predecessing jobs have
+#       been completed, and then - if necessary - completes the job.
+#
+
+#	Set up servers, queuechecks, and users
+export default_user=pfoley
+export user2=username
+export queuechecks=30              # the queue on every server is run every half hour
+
+export default_server=banshee.stat.cmu.edu
+export server2=servername
+export banshee=banshee.stat.cmu.edu
+export castor=castor.stat.cmu.edu
+export gana=gana.stat.cmu.edu
+export hydra1=hydra1.stat.cmu.edu
+
+#	Set up servers for each step of computation
+###	storage servers	   ####
+export storage_server=gana.stat.cmu.edu
+
+###	process servers	   ####
+export fitModel_server=banshee.stat.cmu.edu
+
+export synthTruthImage_server=castor.stat.cmu.edu
+export synthNoisedImages_server=hydra1.stat.cmu.edu
+export findSigma_server=castor.stat.cmu.edu
+
+
+#	Set up storage locations for output files
+export originalData_location=G:/originals/
+export synthedData_location=G:/synthesized/
+
+
+#       Set up users for each step of computation
+export fitModel_user=$default_user
+export synthTruthImage_user=$default_user
+export synthNoisedImages_user=$default_user

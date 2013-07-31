@@ -1,0 +1,9 @@
+function [ simpleSum ] = simpleSum( a, b)
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+answer = a+b;
+simpleSum = a + b;
+save('itworked.mat', 'answer');
+
+end
+

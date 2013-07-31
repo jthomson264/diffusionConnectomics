@@ -1,0 +1,17 @@
+function answer = testShell(number, word, outfile)
+  %%  This is just a function to test the matlab_batcher.
+  %%  It will write the word number times in outfile.
+
+
+  fileid = fopen(outfile);
+  format = '%%';
+
+    thearray=zeros(1,N);
+    
+     for (i=1:N)
+        thearray(i) = word;
+     end;
+
+    fprintf(fileid, format, thearray);
+answer=1
+  end

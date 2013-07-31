@@ -1,0 +1,18 @@
+#!/bin/bash
+./bootstrap.config
+
+# This is a script to synthesize noised images.
+
+# Take inputs.
+trueImageFile=$1
+N=$2
+sigma=$3
+
+# Check if the job is already done.  If so, cat the command to finishedQueue.txt and
+# exit the script.  Otherwise, continute.
+
+
+# Check if the immediately upstream job has been completed.  If not, exit.
+
+
+# Complete the command.

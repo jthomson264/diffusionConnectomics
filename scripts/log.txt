@@ -1,0 +1,16 @@
+loading /media/data2/randomParameters/data.fib.gz...
+no seeding area assigned. perform whole brain tracking
+step_size=1.1373
+turning_angle=1.0472
+interpo_angle=1.0472
+fa_threshold=1.9901
+smoothing=0.70641
+min_length=0.25114
+max_length=860.296
+tracking_method=0
+initial direction=0
+interpolation=0
+thread_count=1
+start tracking...
+finished tracking.
+output file:/media/data2/randomParameters/data.fib.gz.252.trk
