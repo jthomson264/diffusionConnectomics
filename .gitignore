@@ -1,0 +1,48 @@
+###########################################
+#  NIFTIs and other Tractography Outputs  #
+###########################################
+*.nii
+*.nii.gz
+*.fib
+*.fib.gz
+*.src
+*.src.gz
+*.trk
+*.trk.gz
+
+
+
+########################################################
+#  Matlab files.  YOU SHOULD SAVE EVERYTHING IN DATA.  #
+########################################################
+*.mat
+
+
+
+############################
+#  Presentations or Papers #
+############################
+*.pdf
+*.ppt
+
+
+
+############
+#  Images  #
+############
+*.png
+*.ps
+*.jpg
+*.jpeg
+*.bmp
+
+
+###############
+#  TeX Output #
+###############
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.run.xml
